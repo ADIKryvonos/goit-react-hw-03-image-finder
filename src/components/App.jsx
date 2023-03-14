@@ -21,7 +21,7 @@ export class App extends Component {
     showModal: false,
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_, prevState) {
     const prevValue = prevState.inputValue;
     const nextValue = this.state.inputValue;
     const { page } = this.state;
@@ -36,7 +36,7 @@ export class App extends Component {
         .then(resp => {
           const { totalHits, hits } = resp;
           if (hits.length === 0) {
-            toast.error(`Opps, nothing found  "${nextValue}"`);
+            toast.error(`Opps, nothing found "${nextValue}"`);
           }
           this.setState(prevState => ({
             pictures: [...prevState.pictures, ...hits],
@@ -48,6 +48,7 @@ export class App extends Component {
 
         .catch(error =>
           this.setState({
+            error: error,
             status: 'rejected',
           })
         );
@@ -73,11 +74,16 @@ export class App extends Component {
 
   openBigPicture = (largeImageURL, tags) => {
     this.modalChange();
-    this.setState({ largeImageURL: largeImageURL, tags: tags });
+    this.setState({
+      largeImageURL: largeImageURL,
+      tags: tags,
+    });
   };
 
   modalChange = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
   };
 
   render() {
@@ -109,7 +115,9 @@ export class App extends Component {
 
         {status === 'pending' && <Loader />}
         {status === 'rejected' && (
-          <p>Sorry. There are some problems, try again.</p>
+          <p style={{ textAlign: 'center' }}>
+            Sorry. There are some problems, try again.
+          </p>
         )}
       </div>
     );
